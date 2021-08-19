@@ -2,28 +2,32 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
+  ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToMany,
+  JoinColumn,
 } from "typeorm";
-import { Wishlist } from "./wishList";
+import { User } from "./user";
 
 @Entity()
-export class User {
+export class Wishlist {
   @PrimaryGeneratedColumn()
   id!: number;
 
   @Column()
-  userName!: string;
+  day!: string;
 
   @Column()
-  password!: string;
+  value!: number;
 
   @Column()
-  email!: string;
+  prime!: number;
 
-  @OneToMany((_type) => Wishlist, (wishlist: Wishlist) => wishlist.user)
-  wishlist!: Array<Wishlist>;
+  @Column({ nullable: true })
+  userId!: number;
+  @ManyToOne((_type) => User, (user: User) => user.wishlist)
+  @JoinColumn()
+  user!: User;
 
   @CreateDateColumn()
   createdAt!: Date;

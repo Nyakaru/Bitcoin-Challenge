@@ -1,13 +1,18 @@
 export interface Auth {
-    token: string
+  token: string;
+  userId: number;
 }
 
 export interface Error {
-     field: string
-     message: string
+  field: string;
+  message: string;
 }
 
 interface AuthResponse {
-    message?: string
-    error?: Error
+  message?: string;
+  error?: Error;
+}
+export interface LoginResponse {
+  user?: Auth;
+  error?: Error;
 }
