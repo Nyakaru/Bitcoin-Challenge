@@ -3,7 +3,7 @@ import { Secret, sign } from "jsonwebtoken";
 
 import { getRepository } from "typeorm";
 import { User } from "../models";
-import { GeneralResponse } from "../../index";
+import { GeneralResponse, LoginResponse } from "../../index";
 
 const appSecret = process.env.APP_SECRET || "somethingsecret";
 
@@ -39,16 +39,14 @@ export const createUser = async (
     password,
   });
 
-  const token = createToken(user, appSecret);
-
   return {
-    message: token,
+    message: 'User successfully created',
   };
 };
 
 export const loginUser = async (
   payload: User
-): Promise<GeneralResponse> => {
+): Promise<LoginResponse> => {
   const userRepository = getRepository(User);
   const userExists = await userRepository.findOne({ email: payload.email });
   if (!userExists)
@@ -70,8 +68,11 @@ export const loginUser = async (
   }
 
   const token = createToken(userExists, appSecret);
-
+  
   return {
-    message: token,
+    user: {
+      token: token,
+      userId: userExists.id,
+    },
   };
 };

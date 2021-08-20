@@ -7,3 +7,13 @@ export interface GeneralResponse {
   message?: String;
   error?: Error;
 }
+
+interface UserResponse {
+  token: string;
+  userId: number
+}
+
+export interface LoginResponse {
+  user?: UserResponse
+  error?: Error
+}

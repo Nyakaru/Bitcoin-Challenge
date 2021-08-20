@@ -1,6 +1,6 @@
 import { ConnectionOptions } from "typeorm";
 
-import { User } from './models'
+import { User, Wishlist } from './models'
 
 const config: ConnectionOptions = {
   type: "postgres",
@@ -9,7 +9,7 @@ const config: ConnectionOptions = {
   username: process.env.POSTGRES_USER || "postgres",
   password: process.env.POSTGRES_PASSWORD || "postgres",
   database: process.env.POSTGRES_DB || "bitcoin",
-  entities: [ User ],
+  entities: [ User, Wishlist ],
   synchronize: true,
 };
 
