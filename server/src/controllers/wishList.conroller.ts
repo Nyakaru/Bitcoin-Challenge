@@ -13,8 +13,9 @@ import {
 @Tags("Wishlist")
 export default class WishlistController {
   @Get("/:id")
-  public async getWishList(@Path() id: string): Promise<Array<Wishlist>> {
-    return getWishList(Number(id));
+  public async getWishList(@Path() id: string,  start: string='',
+  end: string = ''): Promise<{wishList:Array<Wishlist>; total: number}> {
+    return getWishList(Number(id), start, end);
   }
 
   @Post("/add")

@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import axios, { AxiosResponse } from "axios";
+import { useHistory } from 'react-router-dom'
 
 import { Auth } from "../interface";
 
-const baseUrl = "http://localhost:5000/";
+const baseUrl = process.env.REACT_APP_BASE_URL;
 
 export const DEFAULT_USER_AUTH = {
   token: "",
@@ -50,23 +51,14 @@ export const apiPostRequest = async (
   return response;
 };
 
-export const getData = async (url: string): Promise<AxiosResponse> => {
-  const requestUrl = baseUrl + url;
-  const { message } = getStoredUserAuth();
-  const authHeader = `Bearer ${message}`;
-  axios.defaults.headers.common["Authorization"] = authHeader;
-  const response = await axios.get(requestUrl);
-  const { data } = response;
-  return data;
-};
 
-export const UseAppQuery = (url: string, configurations: object) => {
+export const UseAppQuery =  <T extends object>(url: string, configurations: any, initialData: T, refresh: boolean = false) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [apiData, setApiData] = useState(null);
+  const [apiData, setApiData] = useState(initialData);
   const [serverError, setServerError] = useState(null);
   const { message } = getStoredUserAuth();
   const authHeader = `Bearer ${message}`;
-  axios.defaults.baseURL = "https://hidden-everglades-98624.herokuapp.com/api";
+  axios.defaults.baseURL = baseUrl;
   axios.defaults.headers.common["Authorization"] = authHeader;
   useEffect(() => {
     setIsLoading(true);
@@ -87,6 +79,14 @@ export const UseAppQuery = (url: string, configurations: object) => {
       }
     };
     queryData();
-  }, [url, configurations]);
+  }, [url, configurations, refresh]);
   return { isLoading, apiData, serverError };
 };
+
+export const UseAppRedirect = () => {
+  const history = useHistory();
+  const {userId} = getStoredUserAuth();
+  if(!userId){
+    history.push('/')
+  }
+}
