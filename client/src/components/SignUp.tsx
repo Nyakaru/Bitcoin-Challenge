@@ -11,6 +11,9 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from "yup";
 
 import { apiPostRequest } from "../utils/server";
 import { AuthResponse } from "../interface";
@@ -27,9 +30,12 @@ const avatarStyle = { backgroundColor: "#1bbd7e", margin: "0 auto" };
 const btnstyle = { margin: "10px 0" };
 
 const Signup = () => {
-  const [userName, setUserName] = useState("");
-  const [userEmail, setUserEmail] = useState("");
-  const [userPassword, setUserPassword] = useState("");
+  const schema = yup.object().shape({
+    email: yup.string().email().required('Email is required'),
+    userName: yup.string().required('Username is required'),
+    password: yup.string().required('Password is required'),
+  });
+  const { register, handleSubmit, formState: { errors } } = useForm( {resolver: yupResolver(schema)});
   const [loading, setLoading] = useState(false);
   const [ authError, setAuthError] = useState("");
 
@@ -37,20 +43,16 @@ const Signup = () => {
   /**
    * @param {{ preventDefault: () => void; }} e
    */
-  const onSubmit = (e: { preventDefault: () => void }) => {
-    e.preventDefault();
-    authHandler();
-  };
-  const authHandler = async () => {
+  const authHandler = async (data: any) => {
     try {
       setLoading(true);
       const request = {
-        email: userEmail,
-        password: userPassword,
-        userName: userName,
+        email: data?.email,
+        password: data?.password,
+        userName: data?.userName,
       };
       console.log({ request })
-      const userData = await apiPostRequest("users/signup", request);
+      const userData = await apiPostRequest("/users/signup", request);
       const {
         data: { message, error },
       }: { data: AuthResponse } = userData;
@@ -62,7 +64,6 @@ const Signup = () => {
         console.log(message);
         setAuthError(message)
         setLoading(false);
-        setUserPassword("");
       }
     } catch (err) {
       console.log(err, "err");
@@ -79,36 +80,34 @@ const Signup = () => {
           </Avatar>
           <h2>Sign Up</h2>
         </Grid>
+        <form onSubmit={handleSubmit(authHandler)}>
         <TextField
-          onChange={(e) => setUserName(e.target.value)}
           label="Username"
           placeholder="Enter username"
           fullWidth
           style={btnstyle}
-          required
+          {...register("userName", { required: true})}
         />
+        {errors?.userName?.message &&  <div style={{ color: "red" }}>{errors?.userName?.message}</div>}
         <TextField
-          onChange={(e) => setUserEmail(e.target.value)}
           label="Email"
           placeholder="Enter email"
           type="email"
           fullWidth
           style={btnstyle}
-          required
+          {...register("email", { required: true})}
         />
+        {errors?.email?.message &&  <div style={{ color: "red" }}>{errors?.email?.message}</div>}
         <TextField
-          onChange={(e) => setUserPassword(e.target.value)}
           label="Password"
           placeholder="Enter password"
           type="password"
           fullWidth
           style={btnstyle}
-          required
+          {...register("password", { required: true})}
         />
+        {errors?.password?.message &&  <div style={{ color: "red" }}>{errors?.password?.message}</div>}
         <Button
-          onClick={(e) => {
-            onSubmit(e);
-          }}
           type="submit"
           color="primary"
           variant="contained"
@@ -123,6 +122,7 @@ const Signup = () => {
           Already have an account ?<Link href="/">Sign In</Link>
         </Typography>
         { authError ? <div style={{ color: "red"}}>{authError} </div> : ''}
+        </form>
       </Paper>
     </Grid>
   );

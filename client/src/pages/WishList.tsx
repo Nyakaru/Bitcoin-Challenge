@@ -4,6 +4,7 @@ import { Breadcrumbs, Typography } from "@material-ui/core";
 
 // components
 import WishList from "../components/WishList";
+import { UseAppRedirect } from "../utils/server";
 
 // define css-in-js
 const useStyles = makeStyles(() =>
@@ -13,6 +14,7 @@ const useStyles = makeStyles(() =>
 );
 
 const Home: FC<{}> = (): ReactElement => {
+  UseAppRedirect();
   const classes = useStyles();
   return (
     <div className={classes.root}>

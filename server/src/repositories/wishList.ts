@@ -1,4 +1,4 @@
-import { getRepository } from "typeorm";
+import { getRepository, Between, MoreThanOrEqual, LessThanOrEqual } from "typeorm";
 import axios, { AxiosResponse } from "axios";
 
 import { Wishlist } from "../models";
@@ -19,9 +19,15 @@ export interface Total {
   total: number
 }
 
-export const getWishList = async (id: number): Promise<Array<Wishlist>> => {
+export const getWishList = async (id: number, start: string, end: string): Promise<{wishList:Array<Wishlist>; total: number}> => {
   const wishListRepository = getRepository(Wishlist);
-  return wishListRepository.find({ userId: id });
+  const dayParams=(start && end)?{day: Between(start, end)}:{
+    ...(start && {day: MoreThanOrEqual(start)}),
+    ...(end && {day: LessThanOrEqual(end)})
+  }
+  const wishList =  await wishListRepository.find({ userId: id, ...dayParams});
+  let total = wishList.reduce((a, b) =>  (a + b.value), 0);
+  return {total, wishList};
 };
 
 export const createWishList = async (

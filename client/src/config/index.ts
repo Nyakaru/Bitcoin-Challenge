@@ -24,7 +24,7 @@ export const routes: Array<RouteItem> = [
   {
     key: "router-wish-list",
     title: "Wish List",
-    tooltip: "Home",
+    tooltip: "wishlist",
     path: "/wishlist",
     enabled: true,
     component: WishList,

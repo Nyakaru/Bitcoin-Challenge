@@ -11,7 +11,7 @@ router.post("/add", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
     const controller = new WishlistController();
-    const response = await controller.getWishList(req.params.id);
+    const response = await controller.getWishList(req.params.id, req.query?.start?.toString(), req.query?.end?.toString())
     return res.send(response);
   });
 
