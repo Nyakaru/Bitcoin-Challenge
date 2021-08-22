@@ -34,13 +34,14 @@ export const createWishList = async (
   payload: IWishlistPayload
 ): Promise<Wishlist> => {
   const { date } = payload;
-  const bitCoin: AxiosResponse = await axios.get(
-    `https://api.coindesk.com/v1/bpi/historical/close.json?start=${date.trim()}&end=${date.trim()}`
-  );
-  const { data } = bitCoin;
+  const formattedDate = date.trim()
 
-  //@ts-ignore
-  const value = Math.trunc(Object.values(data["bpi"])[0]);
+  const bitCoin: AxiosResponse = await axios.get(
+    `https://api.coindesk.com/v1/bpi/historical/close.json?start=${formattedDate}&end=${formattedDate}`
+  );
+  const { data: { bpi } } = bitCoin;
+
+  const value = Math.trunc(bpi[formattedDate])
   const arr = Array.from(String(value), Number);
 
   let total = 0;
@@ -65,17 +66,3 @@ export const createWishList = async (
   });
 };
 
-export const getWishListTotal = async (
-  payload: GetTotal
-): Promise<Total> => {
-  const wishListRepository = getRepository(Wishlist);
-  const wishList = await wishListRepository.find({ userId: payload.id });
-  let total = 0;
-  wishList.map((item) => {
-    if (item.day.trim() >= payload.start && item.day.trim() <= payload.end) {
-      total = total + item.value;
-    }
-  });
-
-  return {total : total};
-};

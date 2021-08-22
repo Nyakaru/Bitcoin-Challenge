@@ -15,10 +15,4 @@ router.get("/:id", async (req, res) => {
     return res.send(response);
   });
 
-  router.post("/total", async (req, res) => {
-    const controller = new WishlistController();
-    const response = await controller.getWishListTotal(req.body);
-    return res.send(response);
-  });
-
 export default router;

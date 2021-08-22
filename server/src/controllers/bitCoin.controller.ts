@@ -6,8 +6,8 @@ import { bitCoin } from "../repositories/bitCoin";
 export default class BitCoinController {
   @Get("/")
   public async bitCoin(
-    @Path() start: string,
-    end: string
+    @Path() start: string='',
+    end: string=''
   ): Promise<
     {
       id: string;

@@ -5,8 +5,7 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
     const controller = new BitCoinController();
-    //@ts-ignore
-    const response = await controller.bitCoin(req.query.start, req.query.end);
+    const response = await controller.bitCoin(req.query?.start?.toString(), req.query?.end?.toString());
     return res.send(response);
   });
 

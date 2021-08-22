@@ -1,27 +1,27 @@
 import { FC, ReactElement, useState, useMemo } from "react";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import { DataGrid } from "@material-ui/data-grid";
-import {
-  MuiPickersUtilsProvider,
-  DatePicker,
-} from "@material-ui/pickers";
+import { MuiPickersUtilsProvider, DatePicker } from "@material-ui/pickers";
 import { Grid, Typography, Card, CardContent, Button } from "@material-ui/core";
 import DateFnsUtils from "@date-io/date-fns";
-import {format, sub } from 'date-fns'
+import { format, sub } from "date-fns";
 
-import { UseAppQuery , getStoredUserAuth, apiPostRequest} from "../utils/server";
-export interface WishListValue{
-id: number;
-day: string;
-value: number;
-prime: number
+import {
+  UseAppQuery,
+  getStoredUserAuth,
+  apiPostRequest,
+} from "../utils/server";
+export interface WishListValue {
+  id: number;
+  day: string;
+  value: number;
+  prime: number;
 }
 
-export interface WishListRes{
+export interface WishListRes {
   wishList: Array<WishListValue>;
-  total: number
-  }
-
+  total: number;
+}
 
 // define css-in-js
 const useStyles = makeStyles(() =>
@@ -55,22 +55,29 @@ const useStyles = makeStyles(() =>
     },
     cardContent: {
       textAlign: "center",
-      display: 'flex',
+      display: "flex",
       flexDirection: "column",
     },
-    cardButton: { marginTop: 20},
+    cardButton: { marginTop: 20 },
   })
 );
 
 const WishList: FC<{}> = (): ReactElement => {
-  const { userId } = getStoredUserAuth()
+  const { userId } = getStoredUserAuth();
   const classes = useStyles();
-  const [startDate, setStartDate] = useState<string | null>( null);
+  const [startDate, setStartDate] = useState<string | null>(null);
   const [endDate, setEndDate] = useState<string | null>(null);
   const [refresh, setRefresh] = useState(false);
   const [wishValueDate, setWishValueDate] = useState<string | null>(null);
-  const memoizedParamData = useMemo(() => {return {params: { start: startDate , end: endDate}}}, [startDate, endDate]);
-  const { apiData, isLoading } = UseAppQuery<WishListRes>(`/wishlist/${userId}`, memoizedParamData, {total: 0, wishList: []}, refresh)
+  const memoizedParamData = useMemo(() => {
+    return { params: { start: startDate, end: endDate } };
+  }, [startDate, endDate]);
+  const { apiData, isLoading } = UseAppQuery<WishListRes>(
+    `/wishlist/${userId}`,
+    memoizedParamData,
+    { total: 0, wishList: [] },
+    refresh
+  );
   const { total, wishList } = apiData;
   const tableColumns = [
     {
@@ -92,39 +99,51 @@ const WishList: FC<{}> = (): ReactElement => {
     },
   ];
 
-  const handleDateAdd = async() => {
-    const postData ={
+  const handleDateAdd = async () => {
+    const postData = {
       userId,
-      date: wishValueDate
-    }
+      date: wishValueDate,
+    };
     await apiPostRequest("/wishlist/add", postData);
     setRefresh(!refresh);
-  }
+  };
   return (
     <div className={classes.root}>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <Grid container spacing={3}>
           <Grid item>
             <DatePicker
+              minDate={sub(new Date(), { months: 6 })}
+              maxDate={new Date()}
               disableToolbar
               variant="inline"
               margin="normal"
               id="date-picker-inline"
               label="Start Date"
               value={startDate}
-              onChange={(date) => setStartDate(format( new Date(date?.toString() || ''), 'yyyy-MM-dd'))}
+              onChange={(date) =>
+                setStartDate(
+                  format(new Date(date?.toString() || ""), "yyyy-MM-dd")
+                )
+              }
               autoOk={true}
             />
           </Grid>
           <Grid item>
             <DatePicker
+              minDate={sub(new Date(), { months: 6 })}
+              maxDate={new Date()}
               disableToolbar
               variant="inline"
               margin="normal"
               id="date-picker-inline"
               label="End Date"
               value={endDate}
-              onChange={(date) => setEndDate(format( new Date(date?.toString() || ''), 'yyyy-MM-dd'))}
+              onChange={(date) =>
+                setEndDate(
+                  format(new Date(date?.toString() || ""), "yyyy-MM-dd")
+                )
+              }
               autoOk={true}
             />
           </Grid>
@@ -153,7 +172,7 @@ const WishList: FC<{}> = (): ReactElement => {
               </Typography>
             </CardContent>
           </Card>
-          <Card  variant="outlined">
+          <Card variant="outlined">
             <CardContent className={classes.cardContent}>
               <Typography
                 className={classes.title}
@@ -171,14 +190,23 @@ const WishList: FC<{}> = (): ReactElement => {
                   id="date-picker-dialog"
                   label="Date"
                   value={wishValueDate}
-                  onChange={(date) => setWishValueDate(format( new Date(date?.toString() || ''), 'yyyy-MM-dd'))}
-                  maxDate={sub(new Date(), {days: 1})}
+                  onChange={(date) =>
+                    setWishValueDate(
+                      format(new Date(date?.toString() || ""), "yyyy-MM-dd")
+                    )
+                  }
+                  maxDate={sub(new Date(), { days: 1 })}
                   autoOk={true}
                 />
               </MuiPickersUtilsProvider>
-              <Button className={classes.cardButton} onClick={handleDateAdd} variant="contained" color="primary">
-                  Add
-                </Button>
+              <Button
+                className={classes.cardButton}
+                onClick={handleDateAdd}
+                variant="contained"
+                color="primary"
+              >
+                Add
+              </Button>
             </CardContent>
           </Card>
         </div>
